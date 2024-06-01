@@ -1,101 +1,124 @@
 package br.com.ramon.dao;
 
-import br.com.ramon.Cliente;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContratoDao implements IContratoDao<ClienteDao>{
-    private List<ClienteDao> clientes;
+public class ContratoDao implements IContratoDao {
+    private int id;
+    private String nome;
+    private String cidade;
+    private String estado;
 
-    public ContratoDao() {
-        this.clientes = new ArrayList<>();
+    // Lista estática para armazenar os contratos
+    private static List<ContratoDao> contratos = new ArrayList<>();
+
+    // Construtor
+    public ContratoDao(int id, String nome, String cidade, String estado) {
+        this.id = id;
+        this.nome = nome;
+        this.cidade = cidade;
+        this.estado = estado;
+    }
+
+    public void Cliente() {
+
+    }
+
+    // Métodos getter implementados da interface IContratoDao
+    @Override
+    public int getId() {
+        return id;
     }
 
     @Override
-    public void salvar() {
-        throw new UnsupportedOperationException("Não funciona com o banco");
+    public String getNome() {
+        return nome;
     }
 
     @Override
-    public void adicionar(ClienteDao cliente) {
-//    Verificar se a pessoa  já existe na lista (baseado no ID)
-        for (ClienteDao add : clientes) {
-            if (add.getId() == cliente.getId()) {
-                System.out.println("Pessoa com ID" + cliente.getId() + "já existe.");
-                return;
+    public String getCidade() {
+        return cidade;
+    }
+
+    @Override
+    public String getEstado() {
+        return estado;
+    }
+
+    @Override
+    public ContratoDao buscarPorId(int id) {
+        for (ContratoDao contrato : contratos) {
+            if (contrato.getId() == id) {
+                return contrato;
             }
         }
-        clientes.add(cliente);
+        return null;
     }
-
-    @Override
-    public ClienteDao buscarPorId(int id) {
-        for (ClienteDao cliente : clientes) {
-            if (cliente.getId() == id) {
-                return cliente;
-            }
-        }
-        return null; //Retona Null se não encontrar
-    }
-
 
     @Override
     public boolean excluirPorId(int id) {
-        for (ClienteDao cliente : clientes) {
-            if (cliente.getId() == id) {
-                clientes.remove(cliente);
-                return true; //Retorna TRUE se a pessoa foi removida
+        for (ContratoDao contrato : contratos) {
+            if (contrato.getId() == id) {
+                contratos.remove(contrato);
+                return true;
             }
         }
-             return false; // Retorna FALSE se a pessoa não foi encontrada
+        return false;
     }
 
-        @Override
-        public List<ClienteDao> listar () {
-            return new ArrayList<>(clientes);
+    @Override
+    public void atualizar(ContratoDao contrato) {
+        for (int i = 0; i < contratos.size(); i++) {
+            if (contratos.get(i).getId() == contrato.getId()) {
+                contratos.set(i, contrato);
+                return;
+            }
         }
+    }
+
+    @Override
+    public List<ContratoDao> listar() {
+        return new ArrayList<>(contratos);
+    }
+
+    // Método para adicionar um contrato à lista
+    public void adicionar(ContratoDao contrato) {
+        contratos.add(contrato);
+    }
+
+    @Override
+    public String toString() {
+        return "ContratoDao{id=" + id + ", nome='" + nome + "', cidade='" + cidade + "', estado='" + estado + "'}";
+    }
 
     public static void main(String[] args) {
-        ContratoDao gerenciador = new ContratoDao();
+        // Criando uma instância para gerenciar contratos
+        ContratoDao gerenciador = new ContratoDao(0, "", "", "");
 
-        //Adicionando clientes
-        gerenciador.adicionar(new ClienteDao(1,"Rodrigo", 18l, "RJ"));
-        gerenciador.adicionar(new ClienteDao(2,"Mário", 23l, "SP"));
-        gerenciador.adicionar(new ClienteDao(3,"Fernanda", 16l, "PR"));
-        gerenciador.adicionar(new ClienteDao(1,"Ricardo", 30l, "MT"));
-        gerenciador.adicionar(new ClienteDao(4,"Maria", 24l, "RJ"));
+        // Adicionando contratos
+        gerenciador.adicionar(new ContratoDao(1, "Rodrigo", "São Paulo", "SP"));
+        gerenciador.adicionar(new ContratoDao(2, "Maria", "Rio de Janeiro", "RJ"));
+        gerenciador.adicionar(new ContratoDao(3, "Fernanda", "Belo Horizonte", "MG"));
 
-        //Listando clientes
-        System.out.println("Lista de Clientes: ");
-        for (ClienteDao cliente : gerenciador.listar()) {
-            System.out.println(cliente);
+        // Buscando um contrato por ID
+        ContratoDao contrato = gerenciador.buscarPorId(1);
+        if (contrato != null) {
+            System.out.println("Contrato encontrado: " + contrato);
         }
 
-        //Buscando Cliente por ID
-        System.out.println("\nBuscando cliente com ID 1: ");
-        ClienteDao encontrada = gerenciador.buscarPorId(1);
-        if (encontrada != null) {
-            System.out.println(encontrada);
-        } else {
-            System.out.println("Cliente não encontrada.");
+        // Atualizando um contrato
+        gerenciador.atualizar(new ContratoDao(2, "Contrato Atualizado", "Rio de Janeiro", "RJ"));
+
+        // Excluindo um contrato por ID
+        boolean excluido = gerenciador.excluirPorId(3);
+        if (excluido) {
+            System.out.println("Contrato excluído com sucesso.");
         }
 
-        //Excluindo cliente por ID
-        System.out.println("\nExcluindo cliente com ID 2: ");
-        boolean excluida = gerenciador.excluirPorId(2);
-        if (excluida){
-            System.out.println("Cliente excluída com sucesso");
-        } else {
-            System.out.println("Pessoa não encontrada para exclusão.");
+        // Listando todos os contratos
+        List<ContratoDao> lista = gerenciador.listar();
+        for (ContratoDao c : lista) {
+            System.out.println(c);
         }
-
-        //Listando Cliente após exclusão
-        System.out.println("\nLista de clientes após a exclusão");
-        for (ClienteDao cliente : gerenciador.listar()) {
-            System.out.println(cliente);
-        }
-
     }
-    }
-
+}
